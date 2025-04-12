@@ -17,7 +17,26 @@ const UserSchema = new Schema({
       type: Schema.Types.ObjectId,
       ref: "Role"
     }
-  ]
+  ],
+  cart: [
+    {
+      product: {
+        type: Schema.Types.ObjectId,
+        ref: "Product"
+      },
+      quantity: {
+        type: Number,
+        default: 1,
+        min: 1
+      }
+    }
+  ],
+  favorites: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Product"
+    }
+  ],
 }, {
   timestamps: true
 })

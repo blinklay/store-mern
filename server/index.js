@@ -4,6 +4,7 @@ const authRouter = require("./routes/authRoutes");
 const cookieParser = require("cookie-parser");
 const adminRouter = require("./routes/adminRoutes");
 const productRouter = require("./routes/productRoutes");
+const userRouter = require("./routes/userRoutes");
 require('dotenv').config();
 
 const PORT = process.env.PORT;
@@ -20,5 +21,6 @@ app.use(express.json())
 app.use("/auth", authRouter)
 app.use("/admin", adminRouter)
 app.use("/product", productRouter)
+app.use("/user", userRouter)
 
 app.listen(PORT, () => console.log("server start!"))

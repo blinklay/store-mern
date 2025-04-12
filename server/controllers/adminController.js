@@ -1,16 +1,16 @@
 const UserModel = require("../models/User.model");
 const BrandModel = require("../models/Brand.model");
 const ProductModel = require("../models/Product.model");
-const handleErorr = require("../helpers/handleErrors");
+const handleError = require("../helpers/handleErrors");
 const RoleModel = require("../models/Role.model");
 
 const adminController = {
   async getUsers(_, res) {
     try {
-      const users = await UserModel.find()
+      const users = await UserModel.find().populate("roles")
       res.status(200).json({ users })
     } catch (e) {
-      handleErorr(res, e, "Не удалось получить список пользователей!")
+      handleError(res, e, "Не удалось получить список пользователей!")
     }
   },
   async addProduct(req, res) {
@@ -38,7 +38,7 @@ const adminController = {
       await product.save()
       res.status(200).json({ message: "Товар успешно добавлен!" })
     } catch (e) {
-      handleErorr(res, e, "Не удалось добавить товар!")
+      handleError(res, e, "Не удалось добавить товар!")
     }
   },
   async addUserRole(req, res) {
@@ -62,7 +62,7 @@ const adminController = {
 
       res.status(200).json({ message: "Роль успешно добавлена!" })
     } catch (e) {
-      handleErorr(res, e, "Не удалось изменить роль!")
+      handleError(res, e, "Не удалось изменить роль!")
     }
   }
 }

@@ -3,7 +3,7 @@ const RoleModel = require("../models/Role.model");
 const UserModel = require("../models/User.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const handleErorr = require('../helpers/handleErrors');
+const handleError = require('../helpers/handleErrors');
 const PASSWORD_HASH_LEVEL = 7
 const JWT_SECRET = process.env.JWT_SECRET
 
@@ -38,7 +38,7 @@ const authController = {
         message: "Пользователь зарегестрирован!"
       })
     } catch (e) {
-      handleErorr(res, e, "Не удалось зарегестрироваться!")
+      handleError(res, e, "Не удалось зарегестрироваться!")
     }
   },
   async login(req, res) {
@@ -69,7 +69,7 @@ const authController = {
         message: "Успешная авторизация!"
       })
     } catch (e) {
-      handleErorr(res, e, "Не удалось авторизоваться!")
+      handleError(res, e, "Не удалось авторизоваться!")
     }
   }
 }

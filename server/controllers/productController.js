@@ -6,7 +6,7 @@ const productController = {
       const products = await ProductModel.find().populate("brand")
       res.status(200).json({ products })
     } catch (e) {
-      handleErorr(res, e, "Не удалось получить товары!")
+      handleError(res, e, "Не удалось получить товары!")
     }
   }
 }
