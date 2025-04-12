@@ -10,12 +10,6 @@ const JWT_SECRET = process.env.JWT_SECRET
 const authController = {
   async register(req, res) {
     try {
-      const errors = validationResult(req)
-
-      if (!errors.isEmpty()) {
-        return res.status(400).json(errors.array())
-      }
-
       const { phoneNumber, password } = req.body
       const candidate = await UserModel.findOne({ phoneNumber })
 
