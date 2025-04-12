@@ -1,6 +1,8 @@
 const UserModel = require("../models/User.model");
 const BrandModel = require("../models/Brand.model");
 const ProductModel = require("../models/Product.model");
+const handleErorr = require("../helpers/handleErrors");
+const RoleModel = require("../models/Role.model");
 
 const adminController = {
   async getUsers(_, res) {
@@ -8,8 +10,7 @@ const adminController = {
       const users = await UserModel.find()
       res.status(200).json({ users })
     } catch (e) {
-      console.error(e);
-      res.status(400).json({ message: "Не удалось получить список пользователей!" })
+      handleErorr(res, e, "Не удалось получить список пользователей!")
     }
   },
   async addProduct(req, res) {
@@ -37,8 +38,31 @@ const adminController = {
       await product.save()
       res.status(200).json({ message: "Товар успешно добавлен!" })
     } catch (e) {
-      console.error(e);
-      res.status(500).json({ message: "Не удалось добавить товар!" })
+      handleErorr(res, e, "Не удалось добавить товар!")
+    }
+  },
+  async addUserRole(req, res) {
+    try {
+      const { userId, roleName } = req.body;
+      const user = await UserModel.findById(userId)
+      const role = await RoleModel.findOne({ name: roleName })
+
+      if (!user) {
+        return res.status(404).json({ message: "Пользователь не найден!" })
+      }
+
+      if (!role) {
+        return res.status(404).json({ message: "Такой роли не существует!" })
+      }
+
+      if (!user.roles.includes(role._id)) {
+        user.roles.push(role._id)
+        await user.save()
+      }
+
+      res.status(200).json({ message: "Роль успешно добавлена!" })
+    } catch (e) {
+      handleErorr(res, e, "Не удалось изменить роль!")
     }
   }
 }
