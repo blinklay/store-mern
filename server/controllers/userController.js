@@ -86,8 +86,28 @@ const userController = {
     } catch (e) {
       handleError(res, e, "Не удалось добавить товар в избранное!");
     }
-  }
+  },
+  async removeFromFavorites(req, res) {
+    try {
+      const { productId } = req.params;
+      const { id: userId } = req.user;
 
+      const product = await ProductModel.findById(productId);
+      if (!product) {
+        return res.status(404).json({ message: "Товар не найден!" });
+      }
+
+      await UserModel.findOneAndUpdate(
+        { _id: userId },
+        { $pull: { favorites: productId } },
+        { new: true }
+      )
+
+      res.status(200).json({ message: "Товар удален из избранного!" })
+    } catch (e) {
+      handleError(res, e, "Не удалось убрать товара из избранного!")
+    }
+  }
 }
 
 module.exports = userController

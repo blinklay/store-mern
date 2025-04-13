@@ -7,4 +7,5 @@ userRouter.get("/me", checkAuth, userController.getSelf)
 userRouter.post("/logout", userController.logout)
 userRouter.post("/cart", checkAuth, userController.addToCart)
 userRouter.post("/favorites", checkAuth, userController.addToFavorites)
+userRouter.delete("/favorites/:productId", checkAuth, userController.removeFromFavorites)
 module.exports = userRouter
