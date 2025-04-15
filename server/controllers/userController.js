@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose")
 const handleError = require("../helpers/handleErrors")
 const ProductModel = require("../models/Product.model")
 const UserModel = require("../models/User.model")
@@ -6,7 +7,7 @@ const userController = {
   async getSelf(req, res) {
     try {
       const { id } = req.user
-      const user = await UserModel.findById(id).populate("cart").populate("favorites").populate("roles")
+      const user = await UserModel.findById(id).populate("cart").populate("cart.product").populate("favorites").populate("roles")
 
       if (!user) {
         return res.status(404).json({ message: "Пользователь не найден!" })
@@ -16,7 +17,7 @@ const userController = {
       handleError(res, e, "Не удалось получить информацию!")
     }
   },
-  logout(req, res) {
+  logout(_, res) {
     try {
       res.clearCookie("token", {
         httpOnly: true
@@ -30,21 +31,15 @@ const userController = {
   async addToCart(req, res) {
     try {
       const { id: userId } = req.user;
-      const { productId, quantity = 1 } = req.body;
-
-      const product = await ProductModel.findById(productId);
-      if (!product) {
-        return res.status(404).json({ message: "Товар не найден!" });
-      }
+      const { _id: productId } = req.product
+      const { q: quantity } = req.query
 
       const user = await UserModel.findOne({ _id: userId, "cart.product": productId });
 
       if (user) {
-
         const updatedUser = await UserModel.findOneAndUpdate(
           { _id: userId, "cart.product": productId },
-          { $inc: { "cart.$.quantity": quantity } },
-          { new: true }
+          { $inc: { "cart.$.quantity": 1 } },
         ).populate("cart.product");
 
         return res.status(200).json({ message: "Количество товара увеличено!", cart: updatedUser.cart });
@@ -64,12 +59,7 @@ const userController = {
   async addToFavorites(req, res) {
     try {
       const { id: userId } = req.user;
-      const { productId } = req.body;
-
-      const product = await ProductModel.findById(productId);
-      if (!product) {
-        return res.status(404).json({ message: "Товар не найден!" });
-      }
+      const { _id: productId } = req.product
 
       const user = await UserModel.findById(userId);
 
@@ -87,15 +77,42 @@ const userController = {
       handleError(res, e, "Не удалось добавить товар в избранное!");
     }
   },
+  async removeFromCart(req, res) {
+    try {
+      const { id: userId } = req.user;
+      const { _id: productId } = req.product
+
+      const user = await UserModel.findOne({ _id: userId, "cart.product": productId }).populate("cart")
+      if (!user) {
+        return res.status(404).json({ message: "Товара нет в корзине!" })
+      }
+      const cartItem = user.cart.find(item => item.product.toString() === productId.toString());
+      console.log(cartItem);
+
+      if (!cartItem) {
+        res.status(404).json({ message: "Товраа нет в корзине!" })
+      }
+
+      if (cartItem.quantity <= 1) {
+        await UserModel.findOneAndUpdate({ _id: userId }, {
+          $pull: { cart: { product: productId } }
+        })
+        return res.status(200).json({ message: "Товар удален из корзины!" })
+      } else {
+        await UserModel.findOneAndUpdate(
+          { _id: userId, "cart.product": productId },
+          { $inc: { "cart.$.quantity": -1 } }
+        );
+        return res.status(200).json({ message: "Количество товара уменьшено!" });
+      }
+    } catch (e) {
+      handleError(res, e, "Не удалось уменьшить количество товара!")
+    }
+  },
   async removeFromFavorites(req, res) {
     try {
-      const { productId } = req.params;
       const { id: userId } = req.user;
-
-      const product = await ProductModel.findById(productId);
-      if (!product) {
-        return res.status(404).json({ message: "Товар не найден!" });
-      }
+      const { _id: productId } = req.product
 
       await UserModel.findOneAndUpdate(
         { _id: userId },
