@@ -12,7 +12,8 @@ const productController = {
   },
   async getProductById(req, res) {
     try {
-      const product = req.product
+      const { _id: productId } = req.product
+      const product = await ProductModel.findById(productId).populate("brand")
 
       return res.status(200).json({
         product

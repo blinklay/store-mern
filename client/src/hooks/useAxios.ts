@@ -23,8 +23,6 @@ export default function useAxios<T = unknown>(
       .get<T>(apiLink)
       .then((res) => {
         if (isMounted) {
-          console.log(res.data);
-
           setResult(res.data);
         }
       })
