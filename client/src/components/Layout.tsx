@@ -3,10 +3,12 @@ import MainAside from "./MainAside/MainAside";
 
 export default function Layout() {
   return (
-    <div className="flex gap-2 p-5">
+    <div className="flex gap-4 p-5">
       <MainAside />
 
-      <Outlet />
+      <div className="w-full p-2">
+        <Outlet />
+      </div>
     </div>
   );
 }
