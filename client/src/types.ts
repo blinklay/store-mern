@@ -6,7 +6,8 @@ export interface NavigateItemProp {
 }
 
 export interface ProductCardInterface {
+  _id: string;
   title: string;
   price: number;
-  imgUrl: string;
+  imageUrl: string;
 }

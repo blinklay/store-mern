@@ -1,38 +1,50 @@
 import ProductCard from "../components/ProductCard/ProductCard";
 import { ProductCardInterface } from "../types";
 import useAxios from "../hooks/useAxios";
-
-interface ProductWithId extends ProductCardInterface {
-  _id: string;
-}
+import ProductCardSkeleton from "../components/ProductCard/ProductCardSkeleton";
+import { motion } from "framer-motion";
 
 interface ProductResponse {
-  products: ProductWithId[];
+  products: ProductCardInterface[];
 }
 
 export default function ProductsPage() {
   const { result, error, isLoading } = useAxios<ProductResponse>("/product", {
     products: [],
   });
+
   if (error) {
-    return <div>Ошибка загрузки сервера</div>;
+    return <div>Ошибка загрузки товаров!</div>;
   }
+
   return (
-    <>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
       {isLoading ? (
-        <div>Загрузка контента...</div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {result?.products.map((item) => (
-            <ProductCard
-              key={item._id}
-              title={item.title}
-              price={item.price}
-              imgUrl={item.imgUrl}
-            />
+        <>
+          {new Array(5).fill("").map((_, index) => (
+            <ProductCardSkeleton key={index} />
           ))}
-        </div>
+        </>
+      ) : (
+        <>
+          {result?.products.map((item, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.15 }}
+            >
+              <ProductCard
+                _id={item._id}
+                key={item._id}
+                title={item.title}
+                imageUrl={item.imageUrl}
+                price={item.price}
+              />
+            </motion.div>
+          ))}
+        </>
       )}
-    </>
+    </div>
   );
 }
