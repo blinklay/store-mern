@@ -1,3 +1,4 @@
+const handleError = require("../helpers/handleErrors");
 const ProductModel = require("../models/Product.model");
 
 const productController = {
