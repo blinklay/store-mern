@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import { lazy, Suspense } from "react";
+import CurrentProductPage from "./pages/CurrentProduct.page";
 
 const HomePage = lazy(() => import("./pages/Home.page"));
 const ProductsPage = lazy(() => import("./pages/Products.page"));
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="/search" element={<SearchPage />} />
           <Route path="/user" element={<UserPage />} />
           <Route path="/categories" element={<CategoriesPage />} />
+          <Route path="/product/:id" element={<CurrentProductPage />} />
         </Route>
       </Routes>
     </Suspense>
