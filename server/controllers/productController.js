@@ -9,6 +9,17 @@ const productController = {
     } catch (e) {
       handleError(res, e, "Не удалось получить товары!")
     }
+  },
+  async getProductById(req, res) {
+    try {
+      const product = req.product
+
+      return res.status(200).json({
+        product
+      })
+    } catch (e) {
+      handleError(res, e, "Не удалось получить товар!")
+    }
   }
 }
 
